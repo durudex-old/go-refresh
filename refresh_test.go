@@ -56,7 +56,7 @@ func Test_Parse(t *testing.T) {
 	}
 
 	// Checking is refresh token similar.
-	if (r.String() == nr.String()) == (id == "123") {
+	if (r.String() == nr.String()) != (id == "123") {
 		t.Fatal("error refresh token not similar")
 	}
 }
