@@ -60,8 +60,8 @@ func New() (Token, error) {
 }
 
 // Getting refresh token in bytes.
-func (t Token) Bytes() []byte {
-	return t[:]
+func (t Token) Bytes() [bytesLength]byte {
+	return t
 }
 
 // Getting refresh token in string.
@@ -69,6 +69,7 @@ func (t Token) String() string {
 	return base62.EncodeToString(t[:])
 }
 
+// Getting full refresh token.
 func (t Token) Token(id string) string {
 	return id + "." + t.String()
 }
@@ -103,4 +104,13 @@ func Parse(t string) (Token, string, error) {
 	copy(token[:], b[:])
 
 	return token, s[0], nil
+}
+
+// Sets the global source rander of random bytes for refresh token generation.
+func SetRand(r io.Reader) {
+	if r == nil {
+		return
+	}
+
+	rander = r
 }
