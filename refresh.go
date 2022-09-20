@@ -40,7 +40,7 @@ var (
 // Refresh token type.
 type Token [bytesLength]byte
 
-// Creating a new refresh token by id.
+// Generating a new refresh token.
 func New() (Token, error) {
 	var token Token
 
