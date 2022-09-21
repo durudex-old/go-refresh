@@ -25,7 +25,7 @@ go get github.com/durudex/go-refresh
 
 ## Usage
 
-Generation of refresh token and receiving payload and full token.
+Generation of refresh token and receiving payload and full token:
 
 ```go
 import (
@@ -46,7 +46,34 @@ func main() {
 ```
 
 **Result:**
+
 ```
 Payload: jeUiq2jueOdYGD1bKWaQHMRaGJQv4BlCC
 Token: 123.jeUiq2jueOdYGD1bKWaQHMRaGJQv4BlCC
+```
+
+Hashing of the refresh token using a secret key:
+
+```go
+import (
+	"fmt"
+
+	"github.com/durudex/go-refresh"
+)
+
+func main() {
+	r, err := refresh.New()
+	if err != nil { ... }
+
+	secretKey := "durudex"
+	h := r.Hash([]byte(secretKey))
+
+	fmt.Println("Hash:", fmt.Sprintf("%x", h))
+}
+```
+
+**Result:**
+
+```
+Hash: 91b9b4ddda35be0338407fbaa76bb6adfe2dba8ad6719fe0ebae006c297b529f
 ```

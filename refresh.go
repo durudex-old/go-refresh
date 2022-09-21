@@ -10,11 +10,13 @@ package refresh
 import (
 	"crypto/rand"
 	"errors"
+	"fmt"
 	"io"
 	"strings"
 	"sync"
 
 	"github.com/jxskiss/base62"
+	"golang.org/x/crypto/sha3"
 )
 
 // Refresh token bytes length.
@@ -77,6 +79,22 @@ func (t Token) Token(id string) string {
 // Checking refresh token is nil.
 func (t Token) IsNil() bool {
 	return t == Nil
+}
+
+// Hashing refresh token by secret key.
+func (t Token) Hash(secret []byte) []byte {
+	h := sha3.New256()
+
+	// Writing token to hash.
+	if _, err := h.Write(t[:]); err != nil {
+		panic(fmt.Errorf("error writing token bytes: %s", err))
+	}
+	// Writing secret key to hash.
+	if _, err := h.Write(secret); err != nil {
+		panic(fmt.Errorf("error writing secret bytes: %s", err))
+	}
+
+	return h.Sum(nil)
 }
 
 // Parsing refresh token string.

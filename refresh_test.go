@@ -41,6 +41,24 @@ func TestToken_String(t *testing.T) {
 	}
 }
 
+// Testing hashing refresh token by secret key.
+func TestToken_Hash(t *testing.T) {
+	// Generating a new refresh token.
+	r, err := refresh.New()
+	if err != nil {
+		t.Fatalf("error generating new refresh token: %s", err)
+	}
+
+	defer func() {
+		if a := recover(); a != nil {
+			t.Fatalf("error hashing token: %s", a)
+		}
+	}()
+
+	// Hashing refresh token by secret key.
+	r.Hash([]byte("durudex"))
+}
+
 // Testing parsing refresh token string.
 func Test_Parse(t *testing.T) {
 	// Generating a new refresh token.
