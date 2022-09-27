@@ -77,3 +77,30 @@ func main() {
 ```
 Hash: 91b9b4ddda35be0338407fbaa76bb6adfe2dba8ad6719fe0ebae006c297b529f
 ```
+
+Parsing refresh token from string:
+
+```go
+import (
+	"fmt"
+
+	"github.com/durudex/go-refresh"
+)
+
+func main() {
+	fullToken := "2FLtPgwu0vwNDI6QiRj8AybxVw2.8tLreecuqmX41oEMantgZDQUyJW2oeiRA"
+
+	token, id, err := refresh.Parse(fullToken)
+	if err != nil { ... }
+
+	fmt.Println("Payload:", token.String())
+	fmt.Println("Id:", id)
+}
+```
+
+**Result:**
+
+```
+Payload: 8tLreecuqmX41oEMantgZDQUyJW2oeiRA
+Id: 2FLtPgwu0vwNDI6QiRj8AybxVw2
+```
