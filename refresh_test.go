@@ -8,6 +8,7 @@
 package refresh_test
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/durudex/go-refresh"
@@ -76,5 +77,25 @@ func Test_Parse(t *testing.T) {
 	// Checking is refresh token similar.
 	if (r.String() == nr.String()) != (id == "123") {
 		t.Fatal("error refresh token not similar")
+	}
+}
+
+// Testing getting refresh token from bytes.
+func Test_FromBytes(t *testing.T) {
+	// Generating a new refresh token.
+	r, err := refresh.New()
+	if err != nil {
+		t.Fatalf("error generating new refresh token: %s", err)
+	}
+
+	// Getting refresh token from bytes.
+	fb, err := refresh.FromBytes(r.Bytes())
+	if err != nil {
+		t.Fatalf("error getting refresh token from bytes: %s", err)
+	}
+
+	// Checking is refresh token bytes similar.
+	if !reflect.DeepEqual(r.Bytes(), fb.Bytes()) {
+		t.Fatal("error refresh token bytes not similar")
 	}
 }

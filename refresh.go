@@ -62,8 +62,8 @@ func New() (Token, error) {
 }
 
 // Getting refresh token in bytes.
-func (t Token) Bytes() [bytesLength]byte {
-	return t
+func (t Token) Bytes() []byte {
+	return t[:]
 }
 
 // Getting refresh token in string.
@@ -122,6 +122,31 @@ func Parse(t string) (Token, string, error) {
 	copy(token[:], b[:])
 
 	return token, s[0], nil
+}
+
+// Getting refresh token from bytes.
+func FromBytes(b []byte) (Token, error) {
+	var token Token
+
+	// Checking refresh token payload bytes length.
+	if len(b) != bytesLength {
+		return Nil, ErrPayloadSize
+	}
+
+	copy(token[:], b)
+
+	return token, nil
+}
+
+// Getting refresh token from bytes. Same behavior as FromBytes, but
+// returns a Nil Token on error.
+func FromBytesOrNil(b []byte) Token {
+	token, err := FromBytes(b)
+	if err != nil {
+		return Nil
+	}
+
+	return token
 }
 
 // Sets the global source rander of random bytes for refresh token generation.
