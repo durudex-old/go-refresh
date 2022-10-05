@@ -34,22 +34,25 @@ import (
 	"github.com/durudex/go-refresh"
 )
 
+const (
+	sessionId = "2Fj7R4ERGtDdM5SBGl6mDesP2Qm"
+	objectId = "2Fj7R4WcK9KMn1FY2kCnKGbFtA0"
+)
+
 func main() {
 	r, err := refresh.New()
 	if err != nil { ... }
 
-	sessionId := "123"
-
 	fmt.Println("Payload:", r.String())
-	fmt.Println("Token:", r.Token(sessionId))
+	fmt.Println("Token:", r.Token(sessionId, objectId))
 }
 ```
 
 **Result:**
 
 ```
-Payload: jeUiq2jueOdYGD1bKWaQHMRaGJQv4BlCC
-Token: 123.jeUiq2jueOdYGD1bKWaQHMRaGJQv4BlCC
+Payload: ZpgdubxwoCROmgHJ0g8EzFhFsy5KopL4
+Token: 2Fj7R4ERGtDdM5SBGl6mDesP2Qm.2Fj7R4WcK9KMn1FY2kCnKGbFtA0.ZpgdubxwoCROmgHJ0g8EzFhFsy5KopL4
 ```
 
 Hashing of the refresh token using a secret key:
@@ -61,11 +64,12 @@ import (
 	"github.com/durudex/go-refresh"
 )
 
+const secretKey = "durudex"
+
 func main() {
 	r, err := refresh.New()
 	if err != nil { ... }
 
-	secretKey := "durudex"
 	h := r.Hash([]byte(secretKey))
 
 	fmt.Println("Hash:", fmt.Sprintf("%x", h))
@@ -87,20 +91,22 @@ import (
 	"github.com/durudex/go-refresh"
 )
 
-func main() {
-	fullToken := "2FLtPgwu0vwNDI6QiRj8AybxVw2.8tLreecuqmX41oEMantgZDQUyJW2oeiRA"
+const fullToken = "2Fj7R4ERGtDdM5SBGl6mDesP2Qm.2Fj7R4WcK9KMn1FY2kCnKGbFtA0.ZpgdubxwoCROmgHJ0g8EzFhFsy5KopL4"
 
-	token, id, err := refresh.Parse(fullToken)
+func main() {
+	token, err := refresh.Parse(fullToken)
 	if err != nil { ... }
 
-	fmt.Println("Payload:", token.String())
-	fmt.Println("Id:", id)
+	fmt.Println("Payload:", token.Payload.String())
+	fmt.Println("Session Id:", token.Session)
+	fmt.Println("Object Id:", token.Object)
 }
 ```
 
 **Result:**
 
 ```
-Payload: 8tLreecuqmX41oEMantgZDQUyJW2oeiRA
-Id: 2FLtPgwu0vwNDI6QiRj8AybxVw2
+Payload: ZpgdubxwoCROmgHJ0g8EzFhFsy5KopL4
+Session Id: 2Fj7R4ERGtDdM5SBGl6mDesP2Qm
+Object Id: 2Fj7R4WcK9KMn1FY2kCnKGbFtA0
 ```

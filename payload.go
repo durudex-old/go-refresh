@@ -65,8 +65,8 @@ func (p Payload) String() string {
 }
 
 // Getting full refresh token in string.
-func (p Payload) Token(session, user string) string {
-	return session + "." + user + "." + p.String()
+func (p Payload) Token(session, object string) string {
+	return session + "." + object + "." + p.String()
 }
 
 // Checking refresh token payload is nil.
