@@ -8,19 +8,11 @@
 package refresh
 
 import (
-	"crypto/rand"
 	"errors"
-	"fmt"
-	"io"
 	"strings"
-	"sync"
 
 	"github.com/jxskiss/base62"
-	"golang.org/x/crypto/sha3"
 )
-
-// Refresh token bytes length.
-const bytesLength = 24
 
 var (
 	// Refresh token point count error.
@@ -28,132 +20,46 @@ var (
 	// Refresh token payload size error.
 	ErrPayloadSize = errors.New("error token payload size")
 
-	// Nil refresh token value.
+	// Refresh token nil value.
 	Nil Token
-
-	// Refresh token rander interface.
-	rander = rand.Reader
-	// Refresh token rand buffer.
-	randBuffer = [bytesLength]byte{}
-	// Refresh token rand sync mutex.
-	randMutex = sync.Mutex{}
 )
 
-// Refresh token type.
-type Token [bytesLength]byte
-
-// Generating a new refresh token.
-func New() (Token, error) {
-	var token Token
-
-	randMutex.Lock()
-
-	// Generate random refresh token payload.
-	_, err := io.ReadAtLeast(rander, randBuffer[:], len(randBuffer))
-	copy(token[:], randBuffer[:])
-
-	randMutex.Unlock()
-
-	if err != nil {
-		return Nil, err
-	}
-
-	return token, nil
-}
-
-// Getting refresh token in bytes.
-func (t Token) Bytes() []byte {
-	return t[:]
-}
-
-// Getting refresh token in string.
-func (t Token) String() string {
-	return base62.EncodeToString(t[:])
-}
-
-// Getting full refresh token.
-func (t Token) Token(id string) string {
-	return id + "." + t.String()
-}
-
-// Checking refresh token is nil.
-func (t Token) IsNil() bool {
-	return t == Nil
-}
-
-// Hashing refresh token by secret key.
-func (t Token) Hash(secret []byte) []byte {
-	h := sha3.New256()
-
-	// Writing token to hash.
-	if _, err := h.Write(t[:]); err != nil {
-		panic(fmt.Errorf("error writing token bytes: %s", err))
-	}
-	// Writing secret key to hash.
-	if _, err := h.Write(secret); err != nil {
-		panic(fmt.Errorf("error writing secret bytes: %s", err))
-	}
-
-	return h.Sum(nil)
+// Refresh token structure.
+type Token struct {
+	// Refresh token session id.
+	Session string
+	// Refresh token object id.
+	Object string
+	// Refresh token payload.
+	Payload Payload
 }
 
 // Parsing refresh token string.
-func Parse(t string) (Token, string, error) {
+func Parse(t string) (Token, error) {
 	s := strings.Split(t, ".")
 
 	// Checking count refresh token elements.
-	if len(s) != 2 {
-		return Nil, "", ErrPointCount
+	if len(s) != 3 {
+		return Nil, ErrPointCount
 	}
 
 	var token Token
 
 	// Decode base62 payload string.
-	b, err := base62.DecodeString(s[1])
+	b, err := base62.DecodeString(s[2])
 	if err != nil {
-		return Nil, "", err
+		return Nil, err
 	}
-
-	// Checking refresh token payload bytes length.
-	if len(b) != bytesLength {
-		return Nil, "", ErrPayloadSize
-	}
-
-	copy(token[:], b[:])
-
-	return token, s[0], nil
-}
-
-// Getting refresh token from bytes.
-func FromBytes(b []byte) (Token, error) {
-	var token Token
 
 	// Checking refresh token payload bytes length.
 	if len(b) != bytesLength {
 		return Nil, ErrPayloadSize
 	}
 
-	copy(token[:], b)
+	token.Session = s[0]
+	token.Object = s[1]
+
+	copy(token.Payload[:], b[:])
 
 	return token, nil
-}
-
-// Getting refresh token from bytes. Same behavior as FromBytes, but
-// returns a Nil Token on error.
-func FromBytesOrNil(b []byte) Token {
-	token, err := FromBytes(b)
-	if err != nil {
-		return Nil
-	}
-
-	return token
-}
-
-// Sets the global source rander of random bytes for refresh token generation.
-func SetRand(r io.Reader) {
-	if r == nil {
-		return
-	}
-
-	rander = r
 }
